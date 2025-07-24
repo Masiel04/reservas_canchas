@@ -22,13 +22,17 @@ class Cancha extends BaseController
     {
         $canchaModel = new CanchaModel();
 
-        $canchaModel->insert([
+        $data = [
             'nombre_cancha' => $this->request->getPost('nombre_cancha'),
             'tipo' => $this->request->getPost('tipo'),
             'estado' => $this->request->getPost('estado'),
-        ]);
+        ];
 
-        return redirect()->to('/cancha');
+        if ($canchaModel->insert($data)) {
+            return redirect()->to('/cancha')->with('mensaje', 'Cancha creada exitosamente');
+        } else {
+            return redirect()->back()->withInput()->with('error', 'Error al crear la cancha');
+        }
     }
 
     public function editar($id)
@@ -42,19 +46,26 @@ class Cancha extends BaseController
     {
         $canchaModel = new CanchaModel();
 
-        $canchaModel->update($id, [
+        $data = [
             'nombre_cancha' => $this->request->getPost('nombre_cancha'),
             'tipo' => $this->request->getPost('tipo'),
             'estado' => $this->request->getPost('estado'),
-        ]);
+        ];
 
-        return redirect()->to('/cancha');
+        if ($canchaModel->update($id, $data)) {
+            return redirect()->to('/cancha')->with('mensaje', 'Cancha actualizada exitosamente');
+        } else {
+            return redirect()->back()->withInput()->with('error', 'Error al actualizar la cancha');
+        }
     }
 
     public function eliminar($id)
     {
         $canchaModel = new CanchaModel();
-        $canchaModel->delete($id);
-        return redirect()->to('/cancha');
+        if ($canchaModel->delete($id)) {
+            return redirect()->to('/cancha')->with('mensaje', 'Cancha eliminada exitosamente');
+        } else {
+            return redirect()->back()->with('error', 'Error al eliminar la cancha');
+        }
     }
 }

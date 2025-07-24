@@ -9,13 +9,11 @@ class HorarioDisponible extends BaseController
 {
     protected $horarioModel;
     protected $canchaModel;
-    protected $validation;
 
     public function __construct()
     {
         $this->horarioModel = new HorarioDisponibleModel();
         $this->canchaModel = new CanchaModel();
-        $this->validation = \Config\Services::validation();
     }
 
     public function index()
@@ -41,25 +39,45 @@ class HorarioDisponible extends BaseController
     {
         $data = [
             'canchas' => $this->canchaModel->findAll(),
-            'validation' => $this->validation
+            'validation' => \Config\Services::validation()
         ];
         
         return view('horarios_disponibles/nuevo', $data);
     }
 
     public function guardar()
-    {
-        // Reglas de validación
-        $rules = [
-            'id_cancha' => 'required|numeric',
-            'fecha' => 'required|valid_date',
-            'hora_inicio' => 'required',
-            'hora_fin' => 'required|greater_than_field[hora_inicio]',
-        ];
+{
+    // Reglas de validación básicas
+    $rules = [
+        'id_cancha' => 'required|numeric',
+        'fecha' => 'required|valid_date',
+        'hora_inicio' => 'required',
+        'hora_fin' => 'required'
+    ];
 
-        if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validation->getErrors());
-        }
+    if (!$this->validate($rules)) {
+        return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+    }
+
+    // Validación manual del formato de hora (HH:MM)
+    if (!preg_match('/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/', $this->request->getPost('hora_inicio'))) {
+        return redirect()->back()
+                       ->withInput()
+                       ->with('error', 'Formato de hora inicial inválido (use HH:MM)');
+    }
+
+    if (!preg_match('/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/', $this->request->getPost('hora_fin'))) {
+        return redirect()->back()
+                       ->withInput()
+                       ->with('error', 'Formato de hora final inválido (use HH:MM)');
+    }
+
+    // Validación de que hora_fin > hora_inicio
+    if (strtotime($this->request->getPost('hora_fin')) <= strtotime($this->request->getPost('hora_inicio'))) {
+        return redirect()->back()
+                       ->withInput()
+                       ->with('error', 'La hora final debe ser posterior a la hora inicial');
+    }
 
         // Verificar solapamiento de horarios
         $existeHorario = $this->horarioModel->where('id_cancha', $this->request->getPost('id_cancha'))
@@ -71,9 +89,12 @@ class HorarioDisponible extends BaseController
                                           ->first();
 
         if ($existeHorario) {
-            return redirect()->back()->withInput()->with('error', 'El horario se solapa con otro ya existente');
+            return redirect()->back()
+                           ->withInput()
+                           ->with('error', 'El horario se solapa con otro ya existente');
         }
 
+        // Preparar datos para guardar
         $data = [
             'id_cancha' => $this->request->getPost('id_cancha'),
             'fecha' => $this->request->getPost('fecha'),
@@ -82,9 +103,15 @@ class HorarioDisponible extends BaseController
             'disponible' => $this->request->getPost('disponible') ? 1 : 0,
         ];
 
-        $this->horarioModel->insert($data);
-
-        return redirect()->to('/horario_disponible')->with('success', 'Horario creado exitosamente');
+        // Intentar guardar
+        if ($this->horarioModel->insert($data)) {
+            return redirect()->to('/horario_disponible')
+                           ->with('success', 'Horario creado exitosamente');
+        } else {
+            return redirect()->back()
+                           ->withInput()
+                           ->with('error', 'Error al guardar el horario');
+        }
     }
 
     public function editar($id)
@@ -92,13 +119,14 @@ class HorarioDisponible extends BaseController
         $horario = $this->horarioModel->find($id);
         
         if (!$horario) {
-            return redirect()->to('/horario_disponible')->with('error', 'Horario no encontrado');
+            return redirect()->to('/horario_disponible')
+                           ->with('error', 'Horario no encontrado');
         }
 
         $data = [
             'horario' => $horario,
             'canchas' => $this->canchaModel->findAll(),
-            'validation' => $this->validation
+            'validation' => \Config\Services::validation()
         ];
 
         return view('horarios_disponibles/editar', $data);
@@ -110,15 +138,28 @@ class HorarioDisponible extends BaseController
         $rules = [
             'id_cancha' => 'required|numeric',
             'fecha' => 'required|valid_date',
-            'hora_inicio' => 'required',
-            'hora_fin' => 'required|greater_than_field[hora_inicio]',
+            'hora_inicio' => 'required|valid_time',
+            'hora_fin' => 'required|valid_time'
         ];
 
+        // Validación básica
         if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validation->getErrors());
+            return redirect()->back()
+                           ->withInput()
+                           ->with('errors', $this->validator->getErrors());
         }
 
-        // Verificar solapamiento de horarios (excluyendo el actual)
+        // Validación manual de horas
+        $horaInicio = strtotime($this->request->getPost('hora_inicio'));
+        $horaFin = strtotime($this->request->getPost('hora_fin'));
+        
+        if ($horaFin <= $horaInicio) {
+            return redirect()->back()
+                           ->withInput()
+                           ->with('error', 'La hora de fin debe ser posterior a la hora de inicio');
+        }
+
+        // Verificar solapamiento excluyendo el actual
         $existeHorario = $this->horarioModel->where('id_cancha', $this->request->getPost('id_cancha'))
                                           ->where('fecha', $this->request->getPost('fecha'))
                                           ->where('id_horario !=', $id)
@@ -129,9 +170,12 @@ class HorarioDisponible extends BaseController
                                           ->first();
 
         if ($existeHorario) {
-            return redirect()->back()->withInput()->with('error', 'El horario se solapa con otro ya existente');
+            return redirect()->back()
+                           ->withInput()
+                           ->with('error', 'El horario se solapa con otro ya existente');
         }
 
+        // Preparar datos para actualizar
         $data = [
             'id_cancha' => $this->request->getPost('id_cancha'),
             'fecha' => $this->request->getPost('fecha'),
@@ -140,9 +184,15 @@ class HorarioDisponible extends BaseController
             'disponible' => $this->request->getPost('disponible') ? 1 : 0,
         ];
 
-        $this->horarioModel->update($id, $data);
-
-        return redirect()->to('/horario_disponible')->with('success', 'Horario actualizado exitosamente');
+        // Actualizar registro
+        if ($this->horarioModel->update($id, $data)) {
+            return redirect()->to('/horario_disponible')
+                           ->with('success', 'Horario actualizado exitosamente');
+        } else {
+            return redirect()->back()
+                           ->withInput()
+                           ->with('error', 'Error al actualizar el horario');
+        }
     }
 
     public function eliminar($id)
@@ -150,15 +200,19 @@ class HorarioDisponible extends BaseController
         $horario = $this->horarioModel->find($id);
         
         if (!$horario) {
-            return redirect()->to('/horario_disponible')->with('error', 'Horario no encontrado');
+            return redirect()->to('/horario_disponible')
+                           ->with('error', 'Horario no encontrado');
         }
 
-        $this->horarioModel->delete($id);
-        
-        return redirect()->to('/horario_disponible')->with('success', 'Horario eliminado exitosamente');
+        if ($this->horarioModel->delete($id)) {
+            return redirect()->to('/horario_disponible')
+                           ->with('success', 'Horario eliminado exitosamente');
+        } else {
+            return redirect()->to('/horario_disponible')
+                           ->with('error', 'Error al eliminar el horario');
+        }
     }
 
-    // Método para API que verifica disponibilidad
     public function verificar($id_horario)
     {
         $horario = $this->horarioModel->find($id_horario);

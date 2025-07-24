@@ -10,7 +10,7 @@
     <div class="row justify-content-center">
       <div class="col-lg-8">
         <h2 class="text-white display-4 fw-bold mb-3">BIENVENIDOS</h2>
-        <p class="text-white fs-3 mb-5">GESTIÓN DE RESERVAS DEPORTIVAS</p>
+        <p class="text-white fs-3 mb-5">GESTIÓN DE RESERVAS CANCHAS DEPORTIVAS</p>
         <div class="d-flex flex-wrap justify-content-center gap-3">
           <?php if (session('tipo') === 'admin'): ?>
             <a href="<?= base_url('usuario') ?>" class="btn btn-primary btn-lg px-4 py-2 fw-bold">Gestionar Usuarios</a>
@@ -26,8 +26,6 @@
             <a href="<?= base_url('pago') ?>" class="btn btn-warning btn-lg px-4 py-2 fw-bold">Mis Pagos</a>
             <a href="<?= base_url('incidencia') ?>" class="btn btn-secondary btn-lg px-4 py-2 fw-bold">Reportar Incidencia</a>
           <?php else: ?>
-            <a href="<?= base_url('usuario/nuevo') ?>" class="btn btn-light btn-lg px-4 py-2 fw-bold">REGÍSTRATE</a>
-            <a href="<?= base_url('login') ?>" class="btn btn-outline-light btn-lg px-4 py-2 fw-bold">INICIAR SESIÓN</a>
             <a href="<?= base_url('reserva/nuevo') ?>" class="btn btn-light btn-lg px-4 py-2 fw-bold">RESERVAR AHORA</a>
           <?php endif; ?>
         </div>

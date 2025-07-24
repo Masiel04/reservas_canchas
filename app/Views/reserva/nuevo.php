@@ -67,7 +67,9 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-bold">Fecha de reserva: <span class="text-danger">*</span></label>
-                            <input type="date" name="fecha_reserva" id="fecha_reserva" class="form-control form-control-sm" required readonly>
+                            <input type="date" name="fecha_reserva" id="fecha_reserva" class="form-control form-control-sm" required 
+                                   min="<?= date('Y-m-d') ?>" 
+                                   value="<?= date('Y-m-d') ?>">
                         </div>
 
                         <input type="hidden" name="estado" value="pendiente">
@@ -103,7 +105,6 @@
             if (!idCancha) {
                 selectHorario.innerHTML = '<option value="">-- Primero seleccione una cancha --</option>';
                 selectHorario.disabled = true;
-                fechaReserva.value = '';
                 return;
             }
             
@@ -114,15 +115,17 @@
             // Limpiar opciones anteriores
             selectHorario.innerHTML = '<option value="">Cargando horarios...</option>';
             
+            // Obtener la fecha seleccionada para filtrar
+            const fechaSeleccionada = fechaReserva.value;
+            
             // Hacer petición AJAX para obtener horarios disponibles
-            fetch(`/reserva/horariosPorCancha/${idCancha}`)
+            fetch(`/reserva/horariosPorCancha/${idCancha}?fecha=${fechaSeleccionada}`)
                 .then(response => response.json())
                 .then(data => {
                     selectHorario.innerHTML = '';
                     
                     if (data.length === 0) {
-                        selectHorario.innerHTML = '<option value="">No hay horarios disponibles para esta cancha</option>';
-                        fechaReserva.value = '';
+                        selectHorario.innerHTML = '<option value="">No hay horarios disponibles para esta cancha en la fecha seleccionada</option>';
                         return;
                     }
                     
@@ -136,8 +139,7 @@
                     data.forEach(horario => {
                         const option = document.createElement('option');
                         option.value = horario.id_horario;
-                        option.textContent = `${horario.fecha} | ${horario.hora_inicio.substring(0, 5)} - ${horario.hora_fin.substring(0, 5)}`;
-                        option.setAttribute('data-fecha', horario.fecha);
+                        option.textContent = `${horario.hora_inicio.substring(0, 5)} - ${horario.hora_fin.substring(0, 5)}`;
                         selectHorario.appendChild(option);
                     });
                     
@@ -152,13 +154,10 @@
                 });
         });
         
-        // Actualizar fecha de reserva cuando se selecciona un horario
-        selectHorario.addEventListener('change', function() {
-            const selectedOption = this.options[this.selectedIndex];
-            if (selectedOption && selectedOption.dataset.fecha) {
-                fechaReserva.value = selectedOption.dataset.fecha;
-            } else {
-                fechaReserva.value = '';
+        // Cargar horarios cuando cambia la fecha
+        fechaReserva.addEventListener('change', function() {
+            if (selectCancha.value) {
+                selectCancha.dispatchEvent(new Event('change'));
             }
         });
         

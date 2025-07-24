@@ -22,8 +22,12 @@ class Auth extends Controller
                 'tipo'       => $usuario['tipo'],
                 'logueado'   => true
             ]);
+            // Configurar mensaje de bienvenida en la sesión
+            $session->setFlashdata('bienvenida', true);
+            $session->setFlashdata('nombre_usuario', $usuario['nombre']);
+            
             // Redirigir siempre a inicio, el menú y módulos se adaptan por rol
-            return redirect()->to('/');
+            return redirect()->to('/')->with('mensaje', '¡Bienvenido/a ' . $usuario['nombre'] . '!');
         } else {
             return redirect()->back()->withInput()->with('error', 'Credenciales incorrectas');
         }

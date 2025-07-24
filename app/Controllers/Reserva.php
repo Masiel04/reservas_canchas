@@ -215,40 +215,21 @@ class Reserva extends BaseController
     
     public function horariosPorCancha($idCancha)
     {
-        $hoy = date('Y-m-d');
-        $horaActual = date('H:i:s');
+        $fecha = $this->request->getGet('fecha');
         
-        // Obtener horarios disponibles para la cancha seleccionada
+        // Validar y formatear fecha
+        $fechaValida = $fecha ? date('Y-m-d', strtotime($fecha)) : date('Y-m-d');
+        
         $horarios = $this->horarioModel
-            ->select('hd.id_horario, hd.id_cancha, hd.fecha, hd.hora_inicio, hd.hora_fin, c.nombre_cancha, c.tipo')
-            ->from('horarios_disponibles hd')
+            ->select('hd.id_horario, hd.hora_inicio, hd.hora_fin')
             ->join('canchas c', 'c.id_cancha = hd.id_cancha')
-            ->where('hd.disponible', 1)
+            ->where('hd.disponible', 'Sí')
             ->where('hd.id_cancha', $idCancha)
-            ->groupStart()
-                ->where('hd.fecha >', $hoy)  // Fechas futuras
-                ->orGroupStart()
-                    ->where('hd.fecha', $hoy)  // Hoy pero horas futuras
-                    ->where('hd.hora_inicio >', $horaActual)
-                ->groupEnd()
-            ->groupEnd()
-            ->orderBy('hd.fecha', 'ASC')
+            ->where('hd.fecha', $fechaValida)  // Filtra por fecha exacta
+            ->where('hd.fecha >=', date('Y-m-d'))  // Excluye fechas pasadas
             ->orderBy('hd.hora_inicio', 'ASC')
             ->findAll();
-
-        // Formatear los datos para la respuesta JSON
-        $resultado = array_map(function($horario) {
-            return [
-                'id_horario' => $horario['id_horario'],
-                'id_cancha' => $horario['id_cancha'],
-                'fecha' => $horario['fecha'],
-                'hora_inicio' => $horario['hora_inicio'],
-                'hora_fin' => $horario['hora_fin'],
-                'nombre_cancha' => $horario['nombre_cancha'],
-                'tipo' => $horario['tipo']
-            ];
-        }, $horarios);
-
-        return $this->response->setJSON($resultado);
+    
+        return $this->response->setJSON($horarios);
     }
 }

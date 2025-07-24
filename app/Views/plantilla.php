@@ -23,6 +23,7 @@
   <link href="<?= base_url('assets/vendor/swiper/swiper-bundle.min.css') ?>" rel="stylesheet">
   <link href="<?= base_url('assets/vendor/glightbox/css/glightbox.min.css') ?>" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast@1.4.0/dist/css/iziToast.min.css">
   
 
 
@@ -44,10 +45,12 @@
           <li><a href="<?= base_url() ?>" class="active">Inicio</a></li>
           <?php if (session('tipo') === 'admin'): ?>
             <li><a href="<?= base_url('cancha') ?>">Gestionar Canchas</a></li>
-            <li><a href="<?= base_url('usuario') ?>">Gestionar Usuarios</a></li>
+           
             <li><a href="<?= base_url('reserva') ?>">Ver Reservas</a></li>
             <li><a href="<?= base_url('pago') ?>">Gestionar Pagos</a></li>
             <li><a href="<?= base_url('incidencia') ?>">Incidencias</a></li>
+            <li><a href="<?= base_url('horario_disponible') ?>">Horarios Disponibles</a></li>
+           
             <li><a href="<?= base_url('logout') ?>">Cerrar Sesión</a></li>
           <?php elseif (session('tipo') === 'cliente'): ?>
             <li><a href="<?= base_url('cancha') ?>">Ver Canchas</a></li>
@@ -58,7 +61,6 @@
             <li><a href="<?= base_url('logout') ?>">Cerrar Sesión</a></li>
           <?php else: ?>
             <li><a href="<?= base_url('login') ?>">Iniciar Sesión</a></li>
-            <li><a href="<?= base_url('usuario/nuevo') ?>">Registrarse</a></li>
           <?php endif; ?>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -109,6 +111,7 @@
   <script src="<?= base_url('assets/vendor/purecounter/purecounter_vanilla.js') ?>"></script>
   <script src="<?= base_url('assets/vendor/isotope-layout/isotope.pkgd.min.js') ?>"></script>
   <script src="<?= base_url('assets/vendor/glightbox/js/glightbox.min.js') ?>"></script>
+  <script src="https://cdn.jsdelivr.net/npm/izitoast@1.4.0/dist/js/iziToast.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -122,24 +125,68 @@
 
   <!-- Script para mostrar notificaciones -->
   <script>
+    // Configuración global de iziToast
+    iziToast.settings({
+        timeout: 5000,
+        position: 'topRight',
+        transitionIn: 'fadeInDown',
+        transitionOut: 'fadeOutUp',
+        progressBar: true,
+        close: true
+    });
+
     // Mostrar notificaciones de sesión (éxito/error)
     <?php if(session()->getFlashdata('mensaje')): ?>
       iziToast.success({
         title: '¡Éxito!',
-        message: '<?= session()->getFlashdata('mensaje') ?>',
-        position: 'topRight',
-        timeout: 5000
+        message: '<?= session()->getFlashdata('mensaje') ?>'
       });
     <?php endif; ?>
 
     <?php if(session()->getFlashdata('error')): ?>
       iziToast.error({
         title: 'Error',
-        message: '<?= session()->getFlashdata('error') ?>',
-        position: 'topRight',
-        timeout: 5000
+        message: '<?= session()->getFlashdata('error') ?>'
       });
     <?php endif; ?>
+
+    // Función para mostrar notificación de bienvenida
+    function mostrarBienvenida(nombreUsuario) {
+        iziToast.info({
+            title: '¡Bienvenido/a!',
+            message: 'Hola ' + nombreUsuario + ', has iniciado sesión correctamente.',
+            position: 'topRight',
+            timeout: 5000
+        });
+    }
+
+    // Función para notificación de éxito
+    function mostrarExito(mensaje) {
+        iziToast.success({
+            title: '¡Éxito!',
+            message: mensaje,
+            position: 'topRight'
+        });
+    }
+
+    // Función para notificación de error
+    function mostrarError(mensaje) {
+        iziToast.error({
+            title: 'Error',
+            message: mensaje,
+            position: 'topRight'
+        });
+    }
+
+    // Función para notificación de información
+    function mostrarInfo(mensaje) {
+        iziToast.info({
+            title: 'Información',
+            message: mensaje,
+            position: 'topRight',
+            timeout: 5000
+        });
+    }
 
     // Función para confirmar eliminación con iziToast
     function confirmarEliminacion(event, mensaje = '¿Estás seguro de eliminar este registro?') {
@@ -178,9 +225,6 @@
           "language": {
             "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
           }
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
-            }
         });
     });
 </script>
@@ -226,14 +270,6 @@
     });
 </script>
 
-<script>
-    $(document).ready(function () {
-        $('#tablaReservas').DataTable({
-            language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
-            }
-        });
-    });
-</script>
+
 </body>
 </html>

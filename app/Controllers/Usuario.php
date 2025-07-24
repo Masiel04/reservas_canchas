@@ -22,14 +22,18 @@ class Usuario extends BaseController
     {
         $usuarioModel = new UsuarioModel();
 
-        $usuarioModel->insert([
+        $data = [
             'nombre' => $this->request->getPost('nombre'),
             'correo' => $this->request->getPost('correo'),
             'contrasena' => password_hash($this->request->getPost('contrasena'), PASSWORD_DEFAULT),
             'tipo' => 'cliente',  // para que el usuario que se registra sea directamente cliente
-        ]);
+        ];
 
-        return redirect()->to('/login')->with('success', 'Usuario creado con éxito. Ahora puedes iniciar sesión.');
+        if ($usuarioModel->insert($data)) {
+            return redirect()->to('/login')->with('mensaje', 'Usuario creado con éxito. Ahora puedes iniciar sesión.');
+        } else {
+            return redirect()->back()->withInput()->with('error', 'Error al crear el usuario');
+        }
     }
 
     public function editar($id)
@@ -43,19 +47,31 @@ class Usuario extends BaseController
     {
         $usuarioModel = new UsuarioModel();
 
-        $usuarioModel->update($id, [
+        $data = [
             'nombre' => $this->request->getPost('nombre'),
             'correo' => $this->request->getPost('correo'),
             'tipo' => $this->request->getPost('tipo'),
-        ]);
+        ];
 
-        return redirect()->to('/login')->with('success', 'Usuario creado con éxito. Ahora puedes iniciar sesión.');
+        // Actualizar contraseña solo si se proporcionó una nueva
+        if ($this->request->getPost('contrasena')) {
+            $data['contrasena'] = password_hash($this->request->getPost('contrasena'), PASSWORD_DEFAULT);
+        }
+
+        if ($usuarioModel->update($id, $data)) {
+            return redirect()->to('/usuario')->with('mensaje', 'Usuario actualizado exitosamente');
+        } else {
+            return redirect()->back()->withInput()->with('error', 'Error al actualizar el usuario');
+        }
     }
 
     public function eliminar($id)
     {
         $usuarioModel = new UsuarioModel();
-        $usuarioModel->delete($id);
-        return redirect()->to('/login')->with('success', 'Usuario creado con éxito. Ahora puedes iniciar sesión.');
+        if ($usuarioModel->delete($id)) {
+            return redirect()->to('/usuario')->with('mensaje', 'Usuario eliminado exitosamente');
+        } else {
+            return redirect()->back()->with('error', 'Error al eliminar el usuario');
+        }
     }
 }
