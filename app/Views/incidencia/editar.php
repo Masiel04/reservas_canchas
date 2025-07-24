@@ -22,7 +22,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="id_cancha" class="form-label fw-bold">Cancha:</label>
+                            <label for="id_cancha" class="form-label fw-bold">Nombre Cancha:</label>
                             <select name="id_cancha" id="id_cancha" class="form-select form-select-sm" required>
                                 <?php foreach ($canchas as $cancha): ?>
                                     <option value="<?= $cancha['id_cancha'] ?>" <?= $cancha['id_cancha'] == $incidencia['id_cancha'] ? 'selected' : '' ?>>
