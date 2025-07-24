@@ -26,9 +26,9 @@ class Database extends Config
      */
     public array $default = [
         'DSN'          => '',
-        'hostname'     => 'localhost',
-        'username'     => 'root',
-        'password'     => '',
+        'hostname'     => '192.168.100.89',
+        'username'     => 'practica',
+        'password'     => '.Base123456',
         'database'     => 'sistemareservas',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
