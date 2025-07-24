@@ -16,8 +16,8 @@
                     <th>Usuario</th>
                     <th>Fecha Reserva</th>
                     <th>Monto</th>
-                    <th>Método de Pago</th>
-                    <th>Fecha de Pago</th>
+                    <th>Método Pago</th>
+                    <th>Fecha Pago</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
