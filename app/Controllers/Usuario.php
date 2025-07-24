@@ -30,7 +30,7 @@ class Usuario extends BaseController
         ];
 
         if ($usuarioModel->insert($data)) {
-            return redirect()->to('/login')->with('mensaje', 'Usuario creado con éxito. Ahora puedes iniciar sesión.');
+            return redirect()->to('/login')->with('mensaje', 'Usuario creado con éxito. Inicia Sesion.');
         } else {
             return redirect()->back()->withInput()->with('error', 'Error al crear el usuario');
         }
@@ -59,7 +59,7 @@ class Usuario extends BaseController
         }
 
         if ($usuarioModel->update($id, $data)) {
-            return redirect()->to('/usuario')->with('mensaje', 'Usuario actualizado exitosamente');
+            return redirect()->to('/usuario')->with('mensaje', 'Usuario actualizado con exito');
         } else {
             return redirect()->back()->withInput()->with('error', 'Error al actualizar el usuario');
         }
@@ -69,7 +69,7 @@ class Usuario extends BaseController
     {
         $usuarioModel = new UsuarioModel();
         if ($usuarioModel->delete($id)) {
-            return redirect()->to('/usuario')->with('mensaje', 'Usuario eliminado exitosamente');
+            return redirect()->to('/usuario')->with('mensaje', 'Usuario eliminado con exito');
         } else {
             return redirect()->back()->with('error', 'Error al eliminar el usuario');
         }
