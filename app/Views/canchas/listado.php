@@ -3,7 +3,7 @@
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>Listado de Canchas</h2>
+        <h2>Lista de Canchas</h2>
         <?php if (session('tipo') === 'admin'): ?>
             <a href="/cancha/nuevo" class="btn btn-primary">+ Nueva Cancha</a>
         <?php endif; ?>
@@ -14,7 +14,7 @@
             <thead class="table-dark">
                 <tr>
                     <th>ID</th>
-                    <th>Nombre de la Cancha</th>
+                    <th>Nombre Cancha</th>
                     <th>Tipo</th>
                     <th>Estado</th>
                     <?php if (session('tipo') === 'admin'): ?>
