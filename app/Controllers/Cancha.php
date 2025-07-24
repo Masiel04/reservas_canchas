@@ -29,7 +29,7 @@ class Cancha extends BaseController
         ];
 
         if ($canchaModel->insert($data)) {
-            return redirect()->to('/cancha')->with('mensaje', 'Cancha creada exitosamente');
+            return redirect()->to('/cancha')->with('mensaje', 'Cancha Creada con exito');
         } else {
             return redirect()->back()->withInput()->with('error', 'Error al crear la cancha');
         }
