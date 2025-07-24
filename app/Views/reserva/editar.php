@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
             <!-- Título centrado -->
-            <h2 class="text-center mb-4">Editar Reserva</h2>
+            <h2 class="text-center mb-4">Actualizar Reserva</h2>
             
             <!-- Tarjeta más compacta -->
             <div class="card shadow-sm border-0">
