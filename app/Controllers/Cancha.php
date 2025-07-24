@@ -63,7 +63,7 @@ class Cancha extends BaseController
     {
         $canchaModel = new CanchaModel();
         if ($canchaModel->delete($id)) {
-            return redirect()->to('/cancha')->with('mensaje', 'Cancha eliminada exitosamente');
+            return redirect()->to('/cancha')->with('mensaje', 'Cancha eliminada');
         } else {
             return redirect()->back()->with('error', 'Error al eliminar la cancha');
         }

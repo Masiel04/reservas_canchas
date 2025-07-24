@@ -46,7 +46,7 @@
           <?php if (session('tipo') === 'admin'): ?>
             <li><a href="<?= base_url('cancha') ?>">Gestionar Canchas</a></li>
            
-            <li><a href="<?= base_url('reserva') ?>">Ver Reservas</a></li>
+            <li><a href="<?= base_url('reserva') ?>">Gestionar Reservas</a></li>
             <li><a href="<?= base_url('pago') ?>">Gestionar Pagos</a></li>
             <li><a href="<?= base_url('incidencia') ?>">Incidencias</a></li>
             <li><a href="<?= base_url('horario_disponible') ?>">Horarios Disponibles</a></li>
