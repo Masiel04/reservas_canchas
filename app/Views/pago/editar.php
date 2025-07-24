@@ -4,7 +4,7 @@
 <div class="container py-4">
   <div class="row justify-content-center">
     <div class="col-md-8 col-lg-6">
-      <h2 class="text-center mb-4">Editar Pago</h2>
+      <h2 class="text-center mb-4">Actualizar  Pago</h2>
 
       <div class="card shadow-sm border-0">
         <div class="card-body p-4">

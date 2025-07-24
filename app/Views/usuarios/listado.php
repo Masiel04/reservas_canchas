@@ -3,7 +3,7 @@
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>Listado de Usuarios</h2>
+        <h2> Usuarios Disponibles</h2>
         <a href="/usuario/nuevo" class="btn btn-primary">+ Nuevo Usuario</a>
     </div>
 
