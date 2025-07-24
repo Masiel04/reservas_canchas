@@ -4,7 +4,7 @@
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>Listado de Reservas</h2>
+        <h2>RESERVAS DE CANCHAS</h2>
         <a href="/reserva/nuevo" class="btn btn-primary">+ Nueva Reserva</a>
     </div>
 
