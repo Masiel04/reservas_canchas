@@ -24,7 +24,7 @@ class Pago extends BaseController
     {
         $session = session();
         if (!$session->has('logueado') || $session->get('tipo') !== 'admin') {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('No tienes permiso para acceder a esta sección.');
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Acceso Denegado.');
         }
     }
 
@@ -51,12 +51,12 @@ class Pago extends BaseController
             $reservaModel = new ReservaModel();
             $reserva = $reservaModel->find($idReserva);
             if (!$reserva || $reserva['id_usuario'] != $session->get('id_usuario')) {
-                throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('No tienes permiso para registrar este pago.');
+                throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Acceso denegado para pager.');
             }
         } else if ($session->get('tipo') !== 'admin') {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('No tienes permiso para acceder a esta sección.');
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('No tienes permiso para acceder.');
         }
-        $pagoModel->insert([
+        $pagoModel->insert([ 
             'id_reserva'  => $idReserva,
             'monto'       => $this->request->getPost('monto'),
             'metodo_pago' => $this->request->getPost('metodo_pago'),
